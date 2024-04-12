@@ -3,10 +3,9 @@ use std::error::Error;
 use std::path::PathBuf;
 use std::{env, fs, io, process};
 
-const CYBER_DL_URL: &'static str =
-    "https://github.com/fubark/cyber/archive/refs/tags/latest.tar.gz";
+const CYBER_DL_URL: &str = "https://github.com/fubark/cyber/archive/refs/tags/latest.tar.gz";
 
-const AR_NAME: &'static str = "cyber-latest.tar.gz";
+const AR_NAME: &str = "cyber-latest.tar.gz";
 
 fn main() -> Result<(), Box<dyn Error>> {
     let zig = which::which("zig").unwrap();
