@@ -1,0 +1,15 @@
+[package]
+name = "cyberscript-sys"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[build-dependencies]
+bindgen = "0.69.4"
+reqwest = { version = "0.12.3", features = ["blocking"] }
+tar = "0.4.40"
+flate2 = "1.0.28"
+which = "6.0.1"
