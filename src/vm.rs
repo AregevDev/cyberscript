@@ -1,7 +1,8 @@
 use std::ffi::{CStr, CString};
 
 use cyberscript_sys::{
-    clCreate, clDestroy, clEval, clFreeStr, clNewLastErrorSummary, clSetPrinter, CLStr, CLVM,
+    clCreate, clDeinit, clDestroy, clEval, clFreeStr, clNewLastErrorSummary, clSetPrinter, CLStr,
+    CLVM,
 };
 
 use crate::error::Error;
@@ -14,10 +15,16 @@ pub struct Vm<'a> {
 
 impl<'a> Vm<'a> {
     pub fn new() -> Result<Vm<'a>, Error> {
-        let raw = unsafe { clCreate() };
-        let p = unsafe { raw.as_mut() }.ok_or(Error::Unknown)?;
+        unsafe {
+            let raw = clCreate();
+            let p = raw.as_mut().ok_or(Error::Unknown)?;
 
-        Ok(Vm { inner: p })
+            Ok(Vm { inner: p })
+        }
+    }
+
+    pub fn deinit(&mut self) {
+        unsafe { clDeinit(self.inner) };
     }
 
     pub fn set_printer(&mut self, f: extern "C" fn(*mut CLVM, CLStr)) {
@@ -53,6 +60,6 @@ impl<'a> Vm<'a> {
 
 impl<'a> Drop for Vm<'a> {
     fn drop(&mut self) {
-        unsafe { clDestroy(self.inner) }
+        unsafe { clDestroy(self.inner) };
     }
 }
