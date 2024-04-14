@@ -18,13 +18,16 @@ fn main() {
     let mut vm = Vm::new().unwrap();
     vm.set_printer(cy_print);
 
-    let src = c"var a = 13\nprint a\nreturn a * a";
+    let src = c"var a = 'hello'\nreturn a";
 
     match vm.eval(src) {
         Ok(v) => {
-            let v: i64 = v.into();
-            println!("{}", v);
+            let va = v.to_temp_string(&mut vm);
+            println!("{}", va.to_str().unwrap());
         }
-        Err(_e) => {}
+        Err(_e) => {
+            let msg = vm.last_error_summary().unwrap();
+            println!("{}", msg.to_str().unwrap());
+        }
     }
 }
