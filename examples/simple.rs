@@ -1,6 +1,6 @@
 use std::ffi::CStr;
 
-use cyberscript::Vm;
+use cyberscript::{get_full_version, Vm};
 use cyberscript_sys::{CLStr, CLVM};
 
 extern "C" fn cy_print(_vm: *mut CLVM, st: CLStr) {
@@ -13,6 +13,8 @@ extern "C" fn cy_print(_vm: *mut CLVM, st: CLStr) {
 }
 
 fn main() {
+    println!("--- {} ---", get_full_version());
+
     let mut vm = Vm::new().unwrap();
     vm.set_printer(cy_print);
 
