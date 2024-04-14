@@ -3,7 +3,19 @@
 #![allow(non_snake_case)]
 #![allow(improper_ctypes)]
 
+use std::ffi::CStr;
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+
+impl From<&CStr> for CLStr {
+    fn from(value: &CStr) -> Self {
+        let ptr = value.as_ptr();
+
+        CLStr {
+            ptr,
+            len: value.to_bytes().len(),
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -13,29 +25,29 @@ mod tests {
     #[test]
     fn it_works() {
         unsafe {
-            let vm = csCreate();
+            let vm = clCreate();
             let cstr = CString::new(include_str!("../scripts/test.cy")).unwrap();
 
-            let mut value: CsValue = 0;
-            let res = csEval(
+            let mut value: CLValue = 0;
+            let res = clEval(
                 vm,
-                CsStr {
-                    buf: cstr.as_ptr(),
+                CLStr {
+                    ptr: cstr.as_ptr(),
                     len: cstr.to_bytes().len(),
                 },
-                &mut value as *mut CsValue,
+                &mut value as *mut CLValue,
             );
 
-            if res == CS_SUCCESS {
-                assert_eq!(csAsInteger(value), 60);
-                csRelease(vm, value);
+            if res == CL_SUCCESS {
+                assert_eq!(clAsInteger(value), 60);
+                clRelease(vm, value);
             } else {
-                let err = csNewLastErrorSummary(vm);
-                println!("{}", CStr::from_ptr(err.buf).to_str().unwrap());
-                csFreeStrZ(vm, err.buf);
+                let err = clNewLastErrorSummary(vm);
+                println!("{}", CStr::from_ptr(err.ptr).to_str().unwrap());
+                clFreeStrZ(vm, err.ptr);
             }
 
-            csDestroy(vm);
+            clDestroy(vm);
         }
     }
 }
